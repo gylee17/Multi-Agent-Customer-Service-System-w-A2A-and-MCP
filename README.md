@@ -43,60 +43,72 @@ This project uses Python standard library only.
 
 requirements.txt includes:
 
+```text
 # No external dependencies required — all functionality uses Python standard library only.
+```
 
 ## 3. Setup Instructions
 
 Follow these steps to set up and run the system.
 
-3.1 Clone the Repository
-git clone https://github.com/<your-username>/Multi-Agent-Customer-Service-System-w-A2A-and-MCP.git
-cd Multi-Agent-Customer-Service-System-w-A2A-and-MCP
+  ## 3.1 Clone the Repository
+  
+  ```text
+  git clone https://github.com/<your-username>/Multi-Agent-Customer-Service-System-w-A2A-and-MCP.git
+  cd Multi-Agent-Customer-Service-System-w-A2A-and-MCP
+  ```
 
-3.2 Create and Activate Virtual Environment
-python3 -m venv .venv
-source .venv/bin/activate
+  ## 3.2 Create and Activate Virtual Environment
 
+  ```text
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
 
 You should now see (.venv) in your terminal prompt.
 
-3.3 Install Requirements
-pip install -r requirements.txt
+  ## 3.3 Install Requirements
+  ```text
+  pip install -r requirements.txt
+  ```
 
-3.4 Initialize the Database
-cd mcp_server
-python database_setup.py
-
+  ## 3.4 Initialize the Database
+  
+  ```text
+  cd mcp_server
+  python database_setup.py
+  ```
 
 When prompted:
-
-Would you like to insert sample data? (y/n): y
-
+  ```text
+  Would you like to insert sample data? (y/n): y
+  ```
 
 Verify the database:
-
-ls
-# support.db should now be visible
-
+  ```text
+  ls
+  # support.db should now be visible
+  ```
 
 Return to project root:
 
-cd ..
+  ```text
+  cd ..
+  ```
 
 ## 4. Running the System
 
 Run the full multi-agent demonstration:
 
+```text
 python -m demo.run_scenarios
-
+```
 
 This outputs:
 
-Full A2A communication logs
-
-Router ↔ Data Agent ↔ Support Agent interactions
-
-Final composed responses
+- Full A2A communication logs
+- Router ↔ Data Agent ↔ Support Agent interactions
+- Final composed responses
 
 ## 5. Test Scenarios Implemented
 
@@ -115,8 +127,9 @@ Each scenario prints detailed step-by-step A2A logs.
 
 A Jupyter Notebook version is available at:
 
+```text
 demo/A2A_demo_notebook.ipynb
-
+```
 
 It includes:
 
