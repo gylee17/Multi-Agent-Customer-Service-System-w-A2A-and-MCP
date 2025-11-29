@@ -14,7 +14,7 @@ The system handles task allocation, negotiation between agents, and multi-step c
 
 ---
 
-# Project Structure
+# 📁 Project Structure
 
 Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
 │
@@ -38,24 +38,19 @@ Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
 ├── requirements.txt
 └── README.md
 
-yaml
-Copy code
 
 ---
 
-# Requirements
+# 🔧 Requirements
 
 This project uses **Python standard library only**, so the requirements.txt states:
 
 No external dependencies required; project uses Python standard library only.
-yaml
-Copy code
 
-This satisfies the requirement for a clear dependency list.
 
 ---
 
-# Setup Instructions
+# 🛠 Setup Instructions
 
 Follow these steps exactly to run the system.
 
@@ -66,44 +61,44 @@ Follow these steps exactly to run the system.
 ```bash
 git clone https://github.com/<your-username>/Multi-Agent-Customer-Service-System-w-A2A-and-MCP.git
 cd Multi-Agent-Customer-Service-System-w-A2A-and-MCP
+
 2️⃣ Create and Activate Virtual Environment
-bash
-Copy code
 python3 -m venv .venv
 source .venv/bin/activate      # macOS / Linux
+
+
 You should now see (.venv) in your terminal prompt.
 
 3️⃣ Install Requirements
-bash
-Copy code
 pip install -r requirements.txt
+
 4️⃣ Initialize the Database
-bash
-Copy code
 cd mcp_server
 python database_setup.py
+
+
 When prompted:
 
-pgsql
-Copy code
 Would you like to insert sample data? (y/n): y
-Check the database exists:
 
-bash
-Copy code
+
+Check that the DB appears:
+
 ls
-# support.db should appear
-Then return to project root:
+# support.db should now be visible
 
-bash
-Copy code
+
+Then move back to the project root:
+
 cd ..
+
 ▶️ Running the System (All Scenarios)
+
 From the project root folder:
 
-bash
-Copy code
 python -m demo.run_scenarios
+
+
 This prints:
 
 Full A2A message logs
@@ -113,46 +108,55 @@ Router → DataAgent → SupportAgent communication
 Final user-facing answers for each query
 
 🧪 Test Scenarios Implemented
+
 The system fully supports all required assignment scenarios:
 
-✔ Simple Query
-“Get customer information for ID 5”
+  ✔ Simple Query
 
-✔ Scenario 1: Task Allocation
-“I need help with my account, customer ID 12345”
+    “Get customer information for ID 5”
 
-✔ Scenario 2: Negotiation / Escalation
-“I want to cancel my subscription but I'm having billing issues”
+  ✔ Scenario 1: Task Allocation
 
-✔ Scenario 3: Multi-step Coordination
-“What's the status of all high-priority tickets for premium customers?”
+    “I need help with my account, customer ID 12345”
 
-✔ Complex Query
-“Show me all active customers who have open tickets”
+  ✔ Scenario 2: Negotiation / Escalation
 
-✔ Escalation
-“I've been charged twice, please refund immediately!”
+    “I want to cancel my subscription but I'm having billing issues”
 
-✔ Multi-Intent
-“Update my email to new@email.com and show my ticket history”
+  ✔ Scenario 3: Multi-step Coordination
 
-Each scenario logs detailed A2A transitions.
+    “What's the status of all high-priority tickets for premium customers?”
+
+  ✔ Complex Query
+
+    “Show me all active customers who have open tickets”
+
+  ✔ Escalation
+
+    “I've been charged twice, please refund immediately!”
+
+  ✔ Multi-Intent
+
+    “Update my email to new@email.com
+     and show my ticket history”
+
+Each scenario prints detailed A2A communication logs.
 
 📓 Notebook Demo
-A Jupyter Notebook version is included:
 
-Copy code
+A Jupyter Notebook version is available at:
+
 demo/A2A_demo_notebook.ipynb
-It contains:
 
-Explanation of setup
 
-Agent imports
+It includes:
 
-Helper functions
+  - Setup instructions
 
-Execution of all scenarios
+  - Agent imports
 
-A2A message logs
+  - Helper functions
 
-Final consolidated responses
+  - Logs for all scenarios
+
+  - Final consolidated responses
