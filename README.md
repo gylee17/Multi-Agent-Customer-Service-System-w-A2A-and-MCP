@@ -15,24 +15,21 @@ The system demonstrates:
 
 ```text
 .
-├─ mcp_server/
-│  ├─ database_setup.py      # Creates SQLite DB and inserts test data
-│  ├─ db.py                  # SQLite connection helpers
-│  ├─ tools.py               # MCP tool implementations
-│  └─ server.py              # MCP server entrypoint
+├── agents/
+│   ├── base.py                  # Shared Message & Agent base classes
+│   ├── data_agent.py            # Customer Data agent (uses MCP tools)
+│   ├── router_agent.py          # Router / orchestrator agent
+│   └── support_agent.py         # Support agent (logic & escalation)
 │
-├─ agents/
-│  ├─ base.py                # Shared types (Message, Agent, etc.)
-│  ├─ router_agent.py        # Router / orchestrator agent
-│  ├─ data_agent.py          # Customer Data agent (uses MCP tools)
-│  └─ support_agent.py       # Support agent (support logic & escalation)
+├── demo/
+│   └── run_scenarios.py         # End-to-end demo runner
 │
-├─ demo/
-│  ├─ run_scenarios.py       # End-to-end demo (CLI)
-│  └─ multi_agent_demo.ipynb # (Optional) Colab-style notebook demo
+├── mcp_server/
+│   ├── database_setup.py        # Creates SQLite DB and inserts sample data
+│   ├── db.py                    # SQLite connection helpers
+│   └── tools.py                 # MCP tool implementations
 │
-├─ requirements.txt
-└─ README.md
+└── README.md
 
 ```
 
