@@ -53,7 +53,6 @@ No external dependencies required; project uses Python standard library only.
 
 Follow these steps exactly to run the system.
 
----
 
 ## 1️⃣ Clone the Repository
 
@@ -61,17 +60,17 @@ Follow these steps exactly to run the system.
 git clone https://github.com/<your-username>/Multi-Agent-Customer-Service-System-w-A2A-and-MCP.git
 cd Multi-Agent-Customer-Service-System-w-A2A-and-MCP
 
-2️⃣ Create and Activate Virtual Environment
+## 2️⃣ Create and Activate Virtual Environment
 python3 -m venv .venv
 source .venv/bin/activate      # macOS / Linux
 
 
 You should now see (.venv) in your terminal prompt.
 
-3️⃣ Install Requirements
+## 3️⃣ Install Requirements
 pip install -r requirements.txt
 
-4️⃣ Initialize the Database
+## 4️⃣ Initialize the Database
 cd mcp_server
 python database_setup.py
 
@@ -91,7 +90,7 @@ Then move back to the project root:
 
 cd ..
 
-▶️ Running the System (All Scenarios)
+# ▶️ Running the System (All Scenarios)
 
 From the project root folder:
 
@@ -106,7 +105,7 @@ Router → DataAgent → SupportAgent communication
 
 Final user-facing answers for each query
 
-🧪 Test Scenarios Implemented
+# 🧪 Test Scenarios Implemented
 
 The system fully supports all required assignment scenarios:
 
@@ -141,7 +140,7 @@ The system fully supports all required assignment scenarios:
 
 Each scenario prints detailed A2A communication logs.
 
-📓 Notebook Demo
+# 📓 Notebook Demo
 
 A Jupyter Notebook version is available at:
 
