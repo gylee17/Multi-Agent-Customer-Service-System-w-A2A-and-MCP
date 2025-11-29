@@ -14,7 +14,7 @@ The system handles task allocation, negotiation between agents, and multi-step c
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
 │
@@ -43,7 +43,7 @@ Copy code
 
 ---
 
-# 🔧 Requirements
+# Requirements
 
 This project uses **Python standard library only**, so the requirements.txt states:
 
@@ -55,7 +55,7 @@ This satisfies the requirement for a clear dependency list.
 
 ---
 
-# 🛠 Setup Instructions
+# Setup Instructions
 
 Follow these steps exactly to run the system.
 
