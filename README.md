@@ -38,7 +38,6 @@ Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
 ├── requirements.txt
 └── README.md
 
-
 ---
 
 # 🔧 Requirements
