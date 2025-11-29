@@ -1,160 +1,35 @@
 # Multi-Agent Customer Service System (A2A + MCP)
 
-This project implements a **multi-agent customer service system** using:
+This project implements a multi-agent customer service system where specialized agents coordinate using **Agent-to-Agent (A2A)** communication and access customer data via the **Model Context Protocol (MCP)**.
 
-- **Agent-to-Agent (A2A) coordination**
-- **Model Context Protocol (MCP) tools**
-- **SQLite-based customer + ticket database**
-- **Three cooperating agents**:
-  - **Router Agent** (orchestrator)
-  - **Customer Data Agent** (MCP data specialist)
-  - **Support Agent** (support logic, escalation, formatting)
+The system demonstrates:
 
-The system handles task allocation, negotiation between agents, and multi-step coordination to answer complex user queries.
+- Router agent that orchestrates other agents
+- Customer Data agent that talks to a SQLite database via MCP tools
+- Support agent that handles customer queries, escalation, and reporting
+- End-to-end flows for task allocation, negotiation/escalation, and multi-step coordination
 
 ---
 
-# 📁 Project Structure
+## 1. Project Structure
 
-Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
+```text
+.
+├─ mcp_server/
+│  ├─ database_setup.py      # Creates SQLite DB and inserts test data
+│  ├─ db.py                  # SQLite connection helpers
+│  ├─ tools.py               # MCP tool implementations
+│  └─ server.py              # MCP server entrypoint
 │
-├── mcp_server/
-│ ├── database_setup.py # Creates support.db + sample data
-│ ├── support.db # SQLite database (auto-generated)
-│ ├── db.py # Database connection helpers
-│ └── tools.py # MCP tools (get/update/create/list)
+├─ agents/
+│  ├─ base.py                # Shared types (Message, Agent, etc.)
+│  ├─ router_agent.py        # Router / orchestrator agent
+│  ├─ data_agent.py          # Customer Data agent (uses MCP tools)
+│  └─ support_agent.py       # Support agent (support logic & escalation)
 │
-├── agents/
-│ ├── init.py
-│ ├── base.py # Message & Agent base classes
-│ ├── data_agent.py # Uses MCP tools
-│ ├── support_agent.py # Support logic & escalation
-│ └── router_agent.py # Orchestrates A2A interactions
+├─ demo/
+│  ├─ run_scenarios.py       # End-to-end demo (CLI)
+│  └─ multi_agent_demo.ipynb # (Optional) Colab-style notebook demo
 │
-├── demo/
-│ ├── run_scenarios.py # Full end-to-end demonstration
-│ └── A2A_demo_notebook.ipynb
-│
-├── requirements.txt
-└── README.md
-
----
-
-# 🔧 Requirements
-
-This project uses **Python standard library only**, so the requirements.txt states:
-
-No external dependencies required; project uses Python standard library only.
-
-
----
-
-# 🛠 Setup Instructions
-
-Follow these steps exactly to run the system.
-
-
-## 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/<your-username>/Multi-Agent-Customer-Service-System-w-A2A-and-MCP.git
-cd Multi-Agent-Customer-Service-System-w-A2A-and-MCP
-
-## 2️⃣ Create and Activate Virtual Environment
-python3 -m venv .venv
-source .venv/bin/activate      # macOS / Linux
-
-
-You should now see (.venv) in your terminal prompt.
-
-## 3️⃣ Install Requirements
-pip install -r requirements.txt
-
-## 4️⃣ Initialize the Database
-cd mcp_server
-python database_setup.py
-
-
-When prompted:
-
-Would you like to insert sample data? (y/n): y
-
-
-Check that the DB appears:
-
-ls
-# support.db should now be visible
-
-
-Then move back to the project root:
-
-cd ..
-
-# ▶️ Running the System (All Scenarios)
-
-From the project root folder:
-
-python -m demo.run_scenarios
-
-
-This prints:
-
-Full A2A message logs
-
-Router → DataAgent → SupportAgent communication
-
-Final user-facing answers for each query
-
-# 🧪 Test Scenarios Implemented
-
-The system fully supports all required assignment scenarios:
-
-  ✔ Simple Query
-
-    “Get customer information for ID 5”
-
-  ✔ Scenario 1: Task Allocation
-
-    “I need help with my account, customer ID 12345”
-
-  ✔ Scenario 2: Negotiation / Escalation
-
-    “I want to cancel my subscription but I'm having billing issues”
-
-  ✔ Scenario 3: Multi-step Coordination
-
-    “What's the status of all high-priority tickets for premium customers?”
-
-  ✔ Complex Query
-
-    “Show me all active customers who have open tickets”
-
-  ✔ Escalation
-
-    “I've been charged twice, please refund immediately!”
-
-  ✔ Multi-Intent
-
-    “Update my email to new@email.com
-     and show my ticket history”
-
-Each scenario prints detailed A2A communication logs.
-
-# 📓 Notebook Demo
-
-A Jupyter Notebook version is available at:
-
-demo/A2A_demo_notebook.ipynb
-
-
-It includes:
-
-  - Setup instructions
-
-  - Agent imports
-
-  - Helper functions
-
-  - Logs for all scenarios
-
-  - Final consolidated responses
+├─ requirements.txt
+└─ README.md
