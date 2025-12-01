@@ -1,92 +1,264 @@
-from typing import List, Dict, Any, Optional
-from .db import get_conn
+"""
+tools.py
+
+MCP-style tools for the customer support system.
+
+These functions are the "MCP tools" referenced in the assignment:
+
+- get_customer(customer_id)
+- list_customers(status, limit)
+- update_customer(customer_id, data)
+- create_ticket(customer_id, issue, priority)
+- get_customer_history(customer_id)
+
+They sit on top of the SQLite database created by `database_setup.py`
+and use the connection helper in `db.py`.
+"""
+
+from typing import Any, Dict, List, Optional
+
+from .db import get_conn, _row_to_dict
 
 
-# ---------------------------------------------------------
-# get_customer(customer_id)
-# ---------------------------------------------------------
-def get_customer(customer_id: int) -> Optional[Dict[str, Any]]:
+# ------------------------------------------------------------
+# 1. get_customer(customer_id)
+# ------------------------------------------------------------
+def get_customer(customer_id: int) -> Dict[str, Any]:
+    """
+    Get a single customer by ID.
+
+    Args:
+        customer_id: customers.id
+
+    Returns:
+        dict with keys:
+          - found: bool
+          - customer: dict or None
+          - message: str
+    """
     with get_conn() as conn:
         row = conn.execute(
-            "SELECT * FROM customers WHERE id = ?",
+            """
+            SELECT id, name, email, phone, status, created_at, updated_at
+            FROM customers
+            WHERE id = ?
+            """,
             (customer_id,),
         ).fetchone()
-        return dict(row) if row else None
+
+    if row is None:
+        return {
+            "found": False,
+            "customer": None,
+            "message": f"No customer found with id {customer_id}",
+        }
+
+    return {
+        "found": True,
+        "customer": _row_to_dict(row),
+        "message": "Customer retrieved successfully.",
+    }
 
 
-# ---------------------------------------------------------
-# list_customers(status, limit)
-# ---------------------------------------------------------
-def list_customers(status: str, limit: int = 50) -> List[Dict[str, Any]]:
+# ------------------------------------------------------------
+# 2. list_customers(status, limit)
+# ------------------------------------------------------------
+def list_customers(status: Optional[str] = None, limit: int = 20) -> Dict[str, Any]:
+    """
+    List customers filtered by status.
+
+    Args:
+        status: customers.status ('active' or 'disabled').
+                If None, returns customers with any status.
+        limit: maximum number of customers to return.
+
+    Returns:
+        dict with keys:
+          - count: int
+          - customers: list[dict]
+    """
+    query = """
+        SELECT id, name, email, phone, status, created_at, updated_at
+        FROM customers
+    """
+    params: List[Any] = []
+
+    if status:
+        query += " WHERE status = ?"
+        params.append(status)
+
+    query += " ORDER BY created_at DESC LIMIT ?"
+    params.append(limit)
+
     with get_conn() as conn:
-        rows = conn.execute(
-            "SELECT * FROM customers WHERE status = ? LIMIT ?",
-            (status, limit),
-        ).fetchall()
-        return [dict(r) for r in rows]
+        rows = conn.execute(query, tuple(params)).fetchall()
+
+    return {
+        "count": len(rows),
+        "customers": [_row_to_dict(r) for r in rows],
+    }
 
 
-# ---------------------------------------------------------
-# update_customer(customer_id, data)
-# ---------------------------------------------------------
-def update_customer(customer_id: int, data: Dict[str, Any]) -> bool:
-    """Update given fields on the customer record and bump updated_at."""
+# ------------------------------------------------------------
+# 3. update_customer(customer_id, data)
+# ------------------------------------------------------------
+def update_customer(customer_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Update a customer record with the fields in `data`.
+
+    Args:
+        customer_id: customers.id
+        data: dict of fields to update, e.g. {
+            "email": "new@email.com",
+            "status": "active"
+        }
+
+    Returns:
+        dict with keys:
+          - success: bool
+          - rows_affected: int
+          - message: str
+    """
     if not data:
-        return False
+        return {
+            "success": False,
+            "rows_affected": 0,
+            "message": "No fields provided to update.",
+        }
 
-    columns = []
-    params = []
+    allowed_fields = {"name", "email", "phone", "status"}
+    set_clauses = []
+    params: List[Any] = []
 
     for key, value in data.items():
-        columns.append(f"{key} = ?")
-        params.append(value)
+        if key in allowed_fields:
+            set_clauses.append(f"{key} = ?")
+            params.append(value)
 
-    # Add updated_at timestamp
-    columns.append("updated_at = CURRENT_TIMESTAMP")
+    if not set_clauses:
+        return {
+            "success": False,
+            "rows_affected": 0,
+            "message": "No valid fields to update.",
+        }
 
-    # WHERE clause parameter
+    # Add customer_id for WHERE clause
     params.append(customer_id)
 
-    sql = f"""
-        UPDATE customers
-        SET {', '.join(columns)}
-        WHERE id = ?
-    """
-
-    with get_conn() as conn:
-        cur = conn.execute(sql, tuple(params))
-        return cur.rowcount > 0
-
-
-# ---------------------------------------------------------
-# create_ticket(customer_id, issue, priority)
-# ---------------------------------------------------------
-def create_ticket(customer_id: int, issue: str, priority: str = "medium") -> Dict[str, Any]:
     with get_conn() as conn:
         cur = conn.execute(
+            f"""
+            UPDATE customers
+            SET {", ".join(set_clauses)}, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
+            tuple(params),
+        )
+        rows_affected = cur.rowcount
+
+    return {
+        "success": rows_affected > 0,
+        "rows_affected": rows_affected,
+        "message": "Customer updated." if rows_affected > 0 else "Customer not found.",
+    }
+
+
+# ------------------------------------------------------------
+# 4. create_ticket(customer_id, issue, priority)
+# ------------------------------------------------------------
+def create_ticket(
+    customer_id: int,
+    issue: str,
+    priority: str = "medium",
+) -> Dict[str, Any]:
+    """
+    Create a new ticket for a given customer.
+
+    Args:
+        customer_id: tickets.customer_id (FK to customers.id)
+        issue: description of the problem
+        priority: 'low', 'medium', or 'high'
+
+    Returns:
+        dict with keys:
+          - success: bool
+          - ticket: dict or None
+          - message: str
+    """
+    if priority not in ("low", "medium", "high"):
+        return {
+            "success": False,
+            "ticket": None,
+            "message": "Invalid priority; must be low, medium, or high.",
+        }
+
+    with get_conn() as conn:
+        # Make sure customer exists
+        exists = conn.execute(
+            "SELECT 1 FROM customers WHERE id = ?",
+            (customer_id,),
+        ).fetchone()
+        if not exists:
+            return {
+                "success": False,
+                "ticket": None,
+                "message": f"Customer {customer_id} does not exist.",
+            }
+
+        cur = conn.execute(
             """
-            INSERT INTO tickets (customer_id, issue, status, priority, created_at)
-            VALUES (?, ?, 'open', ?, CURRENT_TIMESTAMP)
+            INSERT INTO tickets (customer_id, issue, status, priority)
+            VALUES (?, ?, 'open', ?)
             """,
             (customer_id, issue, priority),
         )
         ticket_id = cur.lastrowid
 
         row = conn.execute(
-            "SELECT * FROM tickets WHERE id = ?",
+            """
+            SELECT id, customer_id, issue, status, priority, created_at
+            FROM tickets
+            WHERE id = ?
+            """,
             (ticket_id,),
         ).fetchone()
 
-        return dict(row)
+    return {
+        "success": True,
+        "ticket": _row_to_dict(row),
+        "message": "Ticket created successfully.",
+    }
 
 
-# ---------------------------------------------------------
-# get_customer_history(customer_id)
-# ---------------------------------------------------------
-def get_customer_history(customer_id: int) -> List[Dict[str, Any]]:
+# ------------------------------------------------------------
+# 5. get_customer_history(customer_id)
+# ------------------------------------------------------------
+def get_customer_history(customer_id: int) -> Dict[str, Any]:
+    """
+    Get ticket history for a given customer.
+
+    Args:
+        customer_id: tickets.customer_id
+
+    Returns:
+        dict with keys:
+          - customer_id: int
+          - ticket_count: int
+          - tickets: list[dict]
+    """
     with get_conn() as conn:
         rows = conn.execute(
-            "SELECT * FROM tickets WHERE customer_id = ? ORDER BY created_at DESC",
+            """
+            SELECT id, customer_id, issue, status, priority, created_at
+            FROM tickets
+            WHERE customer_id = ?
+            ORDER BY created_at DESC
+            """,
             (customer_id,),
         ).fetchall()
-        return [dict(r) for r in rows]
+
+    return {
+        "customer_id": customer_id,
+        "ticket_count": len(rows),
+        "tickets": [_row_to_dict(r) for r in rows],
+    }
