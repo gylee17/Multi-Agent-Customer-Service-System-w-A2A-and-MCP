@@ -14,21 +14,24 @@ The system demonstrates:
 ## 1. Project Structure
 
 ```text
-.
+
+Multi-Agent-Customer-Service-System-w-A2A-and-MCP/
+├── mcp_server/
+│   ├── database_setup.py      # already there
+│   ├── db.py                  # DB connection helper (you already have)
+│   ├── tools.py               # DB queries (you already have)
+│   └── mcp_server.py          # real MCP server exposing tools
+│
 ├── agents/
-│   ├── base.py                  # Shared Message & Agent base classes
-│   ├── data_agent.py            # Customer Data agent (uses MCP tools)
-│   ├── router_agent.py          # Router / orchestrator agent
-│   └── support_agent.py         # Support agent (logic & escalation)
+│   ├── router_agent_llm.py    # LLM-backed Router Agent
+│   ├── data_agent_llm.py      # LLM-backed Customer Data Agent
+│   └── support_agent_llm.py   # LLM-backed Support Agent
 │
 ├── demo/
-│   └── run_scenarios.py         # End-to-end demo runner
+│   ├── run_scenarios_llm.py   # A2A flows using lab-style pattern
+│   └── A2A_demo_notebook.ipynb  # Colab-based demo
 │
-├── mcp_server/
-│   ├── database_setup.py        # Creates SQLite DB and inserts sample data
-│   ├── db.py                    # SQLite connection helpers
-│   └── tools.py                 # MCP tool implementations
-│
+├── requirements.txt
 └── README.md
 
 ```
