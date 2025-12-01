@@ -137,6 +137,10 @@ def router_agent(state: SupportState) -> SupportState:
     """
     route = llm.invoke(prompt).content.strip().lower()
 
+    # Normalize to one of the three valid routes
+    if route not in ("simple_data", "data_then_support", "support_only"):
+        route = "support_only"
+
     # Best-effort extraction of customer id & email
     cid = extract_customer_id_from_text(query)
     email = extract_email_from_text(query)
@@ -145,13 +149,17 @@ def router_agent(state: SupportState) -> SupportState:
     logs = state.get("agent_log", [])
     logs.append(f"Router → route={route}, customer_id={cid}, new_email={email}")
 
+    # IMPORTANT CHANGE:
+    # We now also let SupportAgent run for simple_data so that it can
+    # turn raw customer_record into a nice human-readable answer.
+    needs_support = route in ("data_then_support", "support_only", "simple_data")
+
     new_state: SupportState = {
         **state,
         "route": route,
         "customer_id": cid,
         "new_email": email,
-        # default: run support after data for "data_then_support"
-        "needs_support": (route == "data_then_support"),
+        "needs_support": needs_support,
         "agent_log": logs,
     }
     return new_state
